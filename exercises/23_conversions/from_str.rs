@@ -60,20 +60,14 @@ impl FromStr for Person {
             return Err(ParsePersonError::BadLen);
         }
 
-        let (name_str, age_str) = (p[0], p[1]);
-        let name = String::from(name_str);
-        if name.len() == 0 {
-            return Err(ParsePersonError::NoName);
+        let name = String::from(p[0]);
+        let a = p[1].parse::<usize>();
+
+        match (name.len(), a) {
+            (0, _) => Err(ParsePersonError::NoName),
+            (_, Err(e)) => Err(ParsePersonError::ParseInt(e)),
+            (_, Ok(age)) => Ok(Person { name, age }),
         }
-
-        let mut age: usize;
-
-        match age_str.parse::<usize>() {
-            Ok(a) => age = a,
-            Err(e) => return Err(ParsePersonError::ParseInt(e)),
-        }
-
-        Ok(Person { name, age })
     }
 }
 
